@@ -84,3 +84,14 @@ To destroy all resources:
 ```bash
 terraform destroy
 ```
+
+
+## Architecture
+![Architecture](https://github.com/user-attachments/assets/4e25b609-7af8-48e4-a1e4-0ebad7cb3600)
+
+## Video Demo
+
+https://github.com/user-attachments/assets/8134359b-66d4-4c2d-8930-37eedb337b78
+
+
+
