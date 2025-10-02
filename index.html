@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Upload System</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .upload-form { border: 2px dashed #ccc; padding: 30px; text-align: center; border-radius: 10px; }
+        .upload-form.dragover { border-color: #007bff; background-color: #f8f9fa; }
+        input[type="file"] { margin: 20px 0; }
+        button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .status { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Receipt Upload System</h1>
+    <p>Upload your receipts (PDF, JPG, PNG) for automated processing.</p>
+    
+    <div class="upload-form" id="uploadForm">
+        <p>Drag and drop files here or click to select</p>
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" multiple>
+        <br>
+        <button type="button" onclick="uploadFiles()">Upload Receipts</button>
+    </div>
+    
+    <div id="status"></div>
+
+    <script>
+        const BUCKET_NAME = '${bucket_name}';
+        const REGION = '${region}';
+        
+        // Drag and drop functionality
+        const uploadForm = document.getElementById("uploadForm");
+        const fileInput = document.getElementById("fileInput");
+        
+        uploadForm.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            uploadForm.classList.add("dragover");
+        });
+        
+        uploadForm.addEventListener("dragleave", () => {
+            uploadForm.classList.remove("dragover");
+        });
+        
+        uploadForm.addEventListener("drop", (e) => {
+            e.preventDefault();
+            uploadForm.classList.remove("dragover");
+            fileInput.files = e.dataTransfer.files;
+        });
+        
+        uploadForm.addEventListener("click", (e) => {
+            // Only trigger file input if not clicking on the file input itself or button
+            if (e.target !== fileInput && e.target.tagName !== 'BUTTON') {
+                fileInput.click();
+            }
+        });
+
+        async function uploadFiles() {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                showStatus("Please select files to upload.", "error");
+                return;
+            }
+
+            showStatus("Uploading files...", "info");
+            
+            try {
+                for (let file of files) {
+                    await uploadToS3(file);
+                }
+                showStatus(`Successfully uploaded $${files.length} file(s). Processing will begin automatically.`, "success");
+                fileInput.value = "";
+            } catch (error) {
+                showStatus(`Upload failed: $${error.message}`, "error");
+            }
+        }
+
+        async function uploadToS3(file) {
+            const fileName = `new-receipts/$${Date.now()}-$${file.name}`;
+            const url = `https://$${BUCKET_NAME}.s3.$${REGION}.amazonaws.com/$${fileName}`;
+            
+            const response = await fetch(url, {
+                method: "PUT",
+                body: file,
+                headers: {
+                    "Content-Type": file.type
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: $${response.status}`);
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById("status");
+            statusDiv.innerHTML = `<div class="status $${type}">$${message}</div>`;
+        }
+    </script>
+</body>
+</html>
