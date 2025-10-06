@@ -93,6 +93,9 @@ terraform destroy
 
 
 
-https://github.com/user-attachments/assets/7b25db94-5fa7-40b4-b7cc-a57afe04254c
+
+https://github.com/user-attachments/assets/01922108-9320-4e31-a013-57f0f3cac5f1
+
+
 
 
