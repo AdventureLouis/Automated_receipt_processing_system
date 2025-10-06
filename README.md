@@ -2,6 +2,11 @@
 
 This Terraform project creates a modern, automated receipt processing system that extracts structured data from receipts and stores it for audit and record-keeping purposes.
 
+
+## Video Demo
+
+https://github.com/user-attachments/assets/01922108-9320-4e31-a013-57f0f3cac5f1
+
 ## Architecture Components
 
 - **S3 Bucket**: Secure storage for original receipts with automatic processing triggers
@@ -89,12 +94,7 @@ terraform destroy
 ## Architecture
 ![Architecture](https://github.com/user-attachments/assets/4e25b609-7af8-48e4-a1e4-0ebad7cb3600)
 
-## Video Demo
 
-
-
-
-https://github.com/user-attachments/assets/01922108-9320-4e31-a013-57f0f3cac5f1
 
 
 
